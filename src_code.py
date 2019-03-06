@@ -62,7 +62,8 @@ def find_little_rec(src_img):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # main
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-pathArr  = ['8.tif','32.tif','56.tif','63.tif','80.tif']
+# pathArr  = ['8.tif','32.tif','56.tif','63.tif','80.tif']
+pathArr  = ['8.tif']
 
 thrImgArr   		 = [None] * 5
 oppThArr    		 = [None] * 5
@@ -81,9 +82,14 @@ for i in range(len(pathArr)):
 	h, w = src_img.shape
 	threshold_img = (src_img > 50) * 255
 	threshold_img = threshold_img.astype(np.uint8)
+	plt.figure("threshold_img")
+	plt.imshow(threshold_img , cmap='gray')
 
-	threshold_img_Opp = (src_img > 10) * 255
+	threshold_img_Opp = (src_img > 50) * 255
 	threshold_img_Opp = threshold_img_Opp.astype(np.uint8)
+	plt.figure("threshold_img_Opp")
+	plt.imshow(threshold_img_Opp , cmap='gray')
+	plt.show()
 
 	thrImgArr[i]  = threshold_img
 	rotated90     = np.rot90(threshold_img_Opp)

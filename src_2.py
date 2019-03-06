@@ -6,8 +6,6 @@ from ex1d import find_line
 from ex2c import *
 from test3 import *
 
-
-
 def filter(img, dimension):
 	img_h, img_w = img.shape
 	for i in range(img_h - dimension + 1):
@@ -77,7 +75,7 @@ def find_little_rec(src_img):
 # main
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # pathArr  = ['8.tif','32.tif','56.tif','63.tif','80.tif']
-pathArr  = ['8.tif']
+pathArr  = ['32.tif']
 
 thrImgArr   		 = [None] * 5
 oppThArr    		 = [None] * 5
@@ -94,29 +92,40 @@ for i in range(len(pathArr)):
 	src_img = cv2.imread(pathArr[i],0)
 	src_img_cpy = src_img
 	h, w = src_img.shape
-	threshold_img = (src_img < 48) * 255
-	dilate = filter(threshold_img, 3 )
 
-	plt.figure("endArr")
-	plt.imshow(dilate , cmap='gray')
-	plt.show()
-
-	# threshold_img = (src_img > 50) * 255
-	# threshold_img = threshold_img.astype(np.uint8)
+	threshold_img = (src_img > 50) * 255
+	threshold_img = threshold_img.astype(np.uint8)
 
 	# threshold_img_Opp = (src_img > 10) * 255
 	# threshold_img_Opp = threshold_img_Opp.astype(np.uint8)
 
-	# thrImgArr[i]  = threshold_img
+	plt.figure("threshold_img")
+	plt.imshow(threshold_img , cmap='gray')
+	plt.show()
+	threshold_img = cv2.GaussianBlur(threshold_img,(5,5),0)
+	thrImgArr[i]  = threshold_img
+	plt.figure("threvvvvshold_img")
+	plt.imshow(threshold_img , cmap='gray')
+	# plt.show()
 	# rotated90     = np.rot90(threshold_img_Opp)
 	# oppThArr[i]   = rotated90
 	# opp_img = (threshold_img < 255) * 255
-	# edges    = cv2.Canny(threshold_img,200,255)
+	# threshold_img =filter(threshold_img, 3)
+	edges    = cv2.Canny(threshold_img,200,255)
 	# edgesOpp = cv2.Canny(rotated90,200,255)
-	# cannyArr[i] = edges
+	cannyArr[i] = edges
+	plt.figure("edges")
+	plt.imshow(edges , cmap='gray')
+	# plt.show()
 	# cannyOppArr[i] = edgesOpp
 
+	# plt.figure("edges")
+	# plt.imshow(edges , cmap='gray')
 
+	# plt.figure("edgesOpp")
+	# plt.imshow(edgesOpp , cmap='gray')
+
+	# plt.show()
 	# linesArr[i] = find_line(edges)
 	# linesOppArr[i] = find_line(edgesOpp)
 	# linesOppArr[i] = np.rot90(linesOppArr[i],3);
@@ -126,9 +135,14 @@ for i in range(len(pathArr)):
 	# maxLineGap = 10
 
 	# new_lines = long_lines(new_imgArr[i])
-	new_lines = long_lines(dilate)
+
+	new_lines = long_lines(edges)
+	new_imgArr[i] = new_lines
+	# plt.figure("new_lines")
+	# plt.imshow(new_lines , cmap='gray')
 	plt.figure("new_lines")
 	plt.imshow(new_lines , cmap='gray')
+
 	plt.show()
 	mask_img = fill_rec(new_lines)
 	end_img = np.zeros((h,w))
@@ -143,6 +157,10 @@ for i in range(len(pathArr)):
 	lastArr[i] = last_img
 
 for i in range(len(endArr)):
+	plt.figure("edges")
+	plt.imshow(new_imgArr[i] , cmap='gray')
+	plt.figure("canyy")
+	plt.imshow(cannyArr[i] , cmap='gray')
 	plt.figure("endArr")
 	plt.imshow(lastArr[i] , cmap='gray')
 # 	plt.figure("src_with_red_colsArr")

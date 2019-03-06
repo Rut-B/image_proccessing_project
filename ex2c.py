@@ -78,8 +78,8 @@ def long_lines(src_img):
 	sort_accumulator  = sorted(accumulator_array)
 
 	# find 100 max values
-	max_accumulator   = sort_accumulator[-100:]
-	# max_accumulator   = sort_accumulator[-50:]
+	# max_accumulator   = sort_accumulator[-100:]
+	max_accumulator   = sort_accumulator[-50:]
 	max_accumulator   = max_accumulator[::-1]
 	max_rho_th = []
 
