@@ -24,10 +24,6 @@ def fill_rec(src_img):
                 else:
                     output_img[i][j]=dilation_cntrs[i][j]
 
-
-    # plt.figure("ricde output_img - input")
-    # plt.imshow(output_img, cmap='gray')
-    # plt.show()
     return output_img
 if __name__=='__main__':
     main()
