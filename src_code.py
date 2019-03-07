@@ -5,7 +5,8 @@ import cv2
 from ex1d import find_line
 from ex2c import *
 from test3 import *
-
+from PIL import Image
+import scipy.misc
 def find_little_rec(src_img):
 
 	h, w = src_img.shape
@@ -62,53 +63,36 @@ def find_little_rec(src_img):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # main
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# pathArr  = ['8.tif','32.tif','56.tif','63.tif','80.tif']
-pathArr  = ['8.tif']
-
-thrImgArr   		 = [None] * 5
-oppThArr    		 = [None] * 5
-cannyArr    		 = [None] * 5
-cannyOppArr 		 = [None] * 5
-linesArr 			 = [None] * 5
-linesOppArr 		 = [None] * 5
-new_imgArr 			 = [None] * 5
-src_with_red_colsArr = [None] * 5
-endArr 				 = [None] * 5
-lastArr				 = [None] * 5
+pathArr  = ['8.tif','32.tif','56.tif','63.tif','80.tif']
+arrNames  = ['8','32','56','63','80']
+lastArr	 = [None] * 5
 
 for i in range(len(pathArr)):
+
 	src_img = cv2.imread(pathArr[i],0)
 	src_img_cpy = src_img
 	h, w = src_img.shape
 	threshold_img = (src_img > 50) * 255
 	threshold_img = threshold_img.astype(np.uint8)
-	plt.figure("threshold_img")
-	plt.imshow(threshold_img , cmap='gray')
 
-	threshold_img_Opp = (src_img > 50) * 255
-	threshold_img_Opp = threshold_img_Opp.astype(np.uint8)
-	plt.figure("threshold_img_Opp")
-	plt.imshow(threshold_img_Opp , cmap='gray')
-	plt.show()
+	#rotate image to use find horizontal lines - to find vertical lines
+	rotated90 = np.rot90(threshold_img)
 
-	thrImgArr[i]  = threshold_img
-	rotated90     = np.rot90(threshold_img_Opp)
-	oppThArr[i]   = rotated90
-	opp_img = (threshold_img < 255) * 255
+	#send to canny to find edges
 	edges    = cv2.Canny(threshold_img,200,255)
 	edgesOpp = cv2.Canny(rotated90,200,255)
-	cannyArr[i] = edges
-	cannyOppArr[i] = edgesOpp
 
+	#find lines -vertical and horizontal - my implementation
+	linesArr = find_line(edges)
+	linesOppArr = find_line(edgesOpp)
+	linesOppArr = np.rot90(linesOppArr,3);
+	new_imgArr  = linesArr + linesOppArr;
+	new_imgArr  = (new_imgArr >= 255)*255
 
-	linesArr[i] = find_line(edges)
-	linesOppArr[i] = find_line(edgesOpp)
-	linesOppArr[i] = np.rot90(linesOppArr[i],3);
-	new_imgArr[i] = linesArr[i] + linesOppArr[i];
-	new_imgArr[i] = (new_imgArr[i] >= 255)*255
-	minLineLength = 30
-	maxLineGap = 10
-	new_lines = long_lines(new_imgArr[i])
+	#find edges of image by hagh transform
+	new_lines = long_lines(new_imgArr)
+
+	#create a mask
 	mask_img = fill_rec(new_lines)
 	end_img = np.zeros((h,w))
 	for j in range(h):
@@ -117,15 +101,14 @@ for i in range(len(pathArr)):
 				end_img[j][k] = src_img_cpy[j][k]
 			else:
 				end_img[j][k]=0
-	endArr[i] = end_img
-	last_img = find_little_rec(endArr[i])
-	lastArr[i] = last_img
+	endArr = end_img
 
-for i in range(len(endArr)):
+	#remove zeros border
+	lastArr[i] = find_little_rec(endArr)
+
+for i in range(len(pathArr)):
+	scipy.misc.imsave('output'+ str(arrNames[i])+'.jpg', lastArr[i])
 	plt.figure("endArr")
 	plt.imshow(lastArr[i] , cmap='gray')
-# 	plt.figure("src_with_red_colsArr")
-# 	plt.imshow(src_with_red_colsArr[i])
-
 	plt.show()
 
